@@ -7,4 +7,5 @@ export interface QueryParseType {
   productFilters?: ProductFilterType;
   attributeSpecItemsFilters?: AttributeSpecItemFilterType;
   hasAttributeSpecItemsFilters: boolean;
+  productSort: {};
 }

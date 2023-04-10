@@ -6,23 +6,17 @@ import {
   Patch,
   Param,
   Delete,
-  Query,
   Req,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { AttributeSpecItemService } from '../attribute-spec-item/attribute-spec-item.service';
-import { data1 } from 'src/data/data1';
 import { Types } from 'mongoose';
-import { Product } from './entities/product.entity';
 import { PromotionItemService } from '../promotion-item/promotion-item.service';
 import { Request, query } from 'express';
 import { queryParse } from 'src/utils/functions';
-import { data2 } from 'src/data/data2';
-import { data3 } from 'src/data/data3';
-import { data4 } from 'src/data/data4';
+
 import { dataType } from 'src/utils/types/data.type';
-import { AttributeSpecItem } from '../attribute-spec-item/entities/attribute-spec-item.entity';
 
 @Controller('product')
 export class ProductController {

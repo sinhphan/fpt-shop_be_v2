@@ -29,6 +29,7 @@ export class ProductService {
     // setup filter for query
     return this.productModel
       .find(query.productFilters)
+      .sort(query.productSort)
       .limit(query.pagination.limit)
       .skip(skip)
       .exec();

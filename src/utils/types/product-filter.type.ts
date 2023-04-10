@@ -6,6 +6,12 @@ export interface ProductFilterType {
         {
           brandName?: StringFilterType | {};
         },
+        (
+          | {
+              labelInst?: string;
+            }
+          | {}
+        ),
         {
           $or?: PriceFilterType[] | {}[];
         },

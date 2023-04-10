@@ -9,10 +9,8 @@ export const queryParse = (req: Request): QueryParseType => {
   const brand = req.query.brand;
   const price = req.query.price;
   const attributes = req.query.attr;
-  // const cpu = req.query.cpu;
-  // const ram = req.query.ram;
-  // const gpu = req.query.gpu;
-  // const ssd = req.query.ssd;
+  const zeroPayment = req.query.zero;
+  const productSortBy = req.query.sort;
 
   // for generate pagination
   const isPage = pageTemp && Number.isInteger(+pageTemp) && +pageTemp > 0;
@@ -23,12 +21,13 @@ export const queryParse = (req: Request): QueryParseType => {
       page: page,
     },
     productFilters: {
-      $and: [{}],
+      $and: [{}, {}, {}],
     },
     attributeSpecItemsFilters: {
       $and: [{ $and: [{}] }, { $and: [{}] }],
     },
     hasAttributeSpecItemsFilters: false,
+    productSort: { 'productVariant.stockQuantity': -1 },
   };
 
   // for generate  brand filter
@@ -44,6 +43,28 @@ export const queryParse = (req: Request): QueryParseType => {
         $and: [
           {
             brandName: brandNameFilter,
+          },
+          {},
+          {},
+        ],
+      },
+    };
+  }
+
+  // for product find product has installment payment 0%
+  if (zeroPayment) {
+    let zeroPaymentRegEx = {
+      $regex: new RegExp(zeroPayment.toString()),
+      $options: 'i',
+    };
+
+    queryParsed = {
+      ...queryParsed,
+      productFilters: {
+        $and: [
+          queryParsed.productFilters.$and[0],
+          {
+            labelInst: zeroPaymentRegEx,
           },
           {},
         ],
@@ -72,7 +93,11 @@ export const queryParse = (req: Request): QueryParseType => {
     queryParsed = {
       ...queryParsed,
       productFilters: {
-        $and: [queryParsed.productFilters.$and[0], { $or: priceConditions }],
+        $and: [
+          queryParsed.productFilters.$and[0],
+          queryParsed.productFilters.$and[1],
+          { $or: priceConditions },
+        ],
       },
     };
   }
@@ -93,5 +118,26 @@ export const queryParse = (req: Request): QueryParseType => {
     };
   }
 
+  // for parse sort query string
+  if (productSortBy) {
+    const parsedSortQuery = parseSortQuery(productSortBy.toString());
+    queryParsed = {
+      ...queryParsed,
+      productSort: parsedSortQuery,
+    };
+  }
+
   return queryParsed;
 };
+
+/**
+ *
+ * @param sortQuery
+ * @returns
+ */
+function parseSortQuery(sortQuery: string) {
+  if (sortQuery === 'low_price') return { 'productVariant.price': 1 };
+  if (sortQuery === 'hight_price') return { 'productVariant.price': -1 };
+
+  return { 'productVariant.stockQuantity': -1 };
+}
