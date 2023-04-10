@@ -12,13 +12,23 @@ export class PromotionItemService {
     private promotionModel: Model<PromotionItem>,
   ) {}
 
-  create(createPromotionItemDto: CreatePromotionItemDto) {
+  async create(
+    createPromotionItemDto: CreatePromotionItemDto,
+  ): Promise<PromotionItem> {
     const promotionItem = new this.promotionModel(createPromotionItemDto);
     return promotionItem.save();
   }
 
   findAll() {
     return `This action returns all promotionItem`;
+  }
+
+  async findByProductSku(listSku: { sku: string }[]): Promise<PromotionItem[]> {
+    const filter = {
+      $or: listSku,
+    };
+
+    return this.promotionModel.find(filter).exec();
   }
 
   findOne(id: number) {

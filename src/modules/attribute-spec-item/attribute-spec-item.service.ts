@@ -5,23 +5,26 @@ import { InjectModel } from '@nestjs/mongoose';
 import { AttributeSpecItem } from './entities/attribute-spec-item.entity';
 import { Model, Types } from 'mongoose';
 import { filter } from 'rxjs';
+import { AttributeSpecItemFilterType } from 'src/utils/types/attribute-spec-item-filter.type';
 
 @Injectable()
 export class AttributeSpecItemService {
   constructor(
     @InjectModel(AttributeSpecItem.name)
-    private attributeSpecItem: Model<AttributeSpecItem>,
+    private attributeSpecItemModel: Model<AttributeSpecItem>,
   ) {}
 
   create(createAttributeSpecItemDto: CreateAttributeSpecItemDto) {
-    const attributeSpecItem = new this.attributeSpecItem(
+    const attributeSpecItem = new this.attributeSpecItemModel(
       createAttributeSpecItemDto,
     );
     return attributeSpecItem.save();
   }
 
-  findAll() {
-    return `This action returns all attributeSpecItem`;
+  async findByQuery(
+    filter: AttributeSpecItemFilterType,
+  ): Promise<AttributeSpecItem[]> {
+    return this.attributeSpecItemModel.find(filter).exec();
   }
 
   async findByListProductId(
@@ -31,7 +34,7 @@ export class AttributeSpecItemService {
       $or: listProductId,
     };
 
-    return this.attributeSpecItem.find(filter).exec();
+    return this.attributeSpecItemModel.find(filter).exec();
   }
 
   findOne(id: number) {

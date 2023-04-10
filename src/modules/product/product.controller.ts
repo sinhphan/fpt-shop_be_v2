@@ -34,132 +34,86 @@ export class ProductController {
     private readonly promotionItemService: PromotionItemService,
   ) {}
 
-  @Post()
-  create(/*@Body() createProductDto: CreateProductDto*/) {
-    data1.filterModel.listDefault.list.forEach(async (e) => {
-      const product = await this.productService.create(e);
-
-      // get attr of product
-      const attributeSpecItemData = data1.filterModel.attributeSpecItems.filter(
-        (attr) => e.id === attr.productID,
-      );
-
-      attributeSpecItemData.forEach(async (attr) => {
-        const newAttr = { ...attr, productID: product };
-        await this.attributeSpecItemService.create(newAttr);
-      });
-
-      //get promotion of products
-      const promotions = data1.filterModel.promotionItems.filter(
-        (promotion) => promotion.sku === e.productVariant.sku,
-      );
-
-      promotions.forEach(async (promotion) => {
-        const newPromo = { ...promotion, productID: product };
-        await this.promotionItemService.create(newPromo);
-      });
-    });
-
-    data2.filterModel.listDefault.list.forEach(async (e) => {
-      const product = await this.productService.create(e);
-
-      // get attr of product
-      const attributeSpecItemData = data2.filterModel.attributeSpecItems.filter(
-        (attr) => e.id === attr.productID,
-      );
-
-      attributeSpecItemData.forEach(async (attr) => {
-        const newAttr = { ...attr, productID: product };
-        await this.attributeSpecItemService.create(newAttr);
-      });
-
-      //get promotion of products
-      const promotions = data2.filterModel.promotionItems.filter(
-        (promotion) => promotion.sku === e.productVariant.sku,
-      );
-
-      promotions.forEach(async (promotion) => {
-        const newPromo = { ...promotion, productID: product };
-        await this.promotionItemService.create(newPromo);
-      });
-    });
-
-    data3.filterModel.listDefault.list.forEach(async (e) => {
-      const product = await this.productService.create(e);
-
-      // get attr of product
-      const attributeSpecItemData = data3.filterModel.attributeSpecItems.filter(
-        (attr) => e.id === attr.productID,
-      );
-
-      attributeSpecItemData.forEach(async (attr) => {
-        const newAttr = { ...attr, productID: product };
-        await this.attributeSpecItemService.create(newAttr);
-      });
-
-      //get promotion of products
-      const promotions = data3.filterModel.promotionItems.filter(
-        (promotion) => promotion.sku === e.productVariant.sku,
-      );
-
-      promotions.forEach(async (promotion) => {
-        const newPromo = { ...promotion, productID: product };
-        await this.promotionItemService.create(newPromo);
-      });
-    });
-
-    data4.filterModel.listDefault.list.forEach(async (e) => {
-      const product = await this.productService.create(e);
-
-      // get attr of product
-      const attributeSpecItemData = data4.filterModel.attributeSpecItems.filter(
-        (attr) => e.id === attr.productID,
-      );
-
-      attributeSpecItemData.forEach(async (attr) => {
-        const newAttr = { ...attr, productID: product };
-        await this.attributeSpecItemService.create(newAttr);
-      });
-
-      //get promotion of products
-      const promotions = data4.filterModel.promotionItems.filter(
-        (promotion) => promotion.sku === e.productVariant.sku,
-      );
-
-      promotions.forEach(async (promotion) => {
-        const newPromo = { ...promotion, productID: product };
-        await this.promotionItemService.create(newPromo);
-      });
-    });
-
-    return;
-  }
-
   @Get()
   async find(@Req() req: Request) {
     const queryParsed = queryParse(req);
 
-    await this.productService
-      .find(queryParsed.pagination)
-      .then((products) => {
-        this.data = {
+    await this.productService.find(queryParsed).then(async (products) => {
+      /**
+       * @const list of productID generate for filter in promotionItems & attributeSpecItems collection
+       * @type { productID: string }[]
+       */
+      let listProductIdForFilter: { productID: string }[] = products.map(
+        (product) => {
+          return { productID: product._id.toString() };
+        },
+      );
+
+      // for find all sku for product
+      let listSku = products.map((product) => {
+        return { sku: product.productVariant.sku };
+      });
+
+      // find attributes and promotions
+      //find product when has query in attributeSpecItems collection
+      if (queryParsed.hasAttributeSpecItemsFilters) {
+        const attributeSpecItems =
+          await this.attributeSpecItemService.findByQuery(
+            queryParsed.attributeSpecItemsFilters,
+          );
+
+        /**
+         * @const list of productID for filter products with attributeSpecItem.productId
+         * @type string[]
+         */
+        const productIds: string[] = attributeSpecItems.map((attr) => {
+          return attr.productID._id.toString();
+        });
+
+        /**
+         * let Products ---> new products after filtered with attributeSpecItem.productId
+         */
+        products = products.filter((product) =>
+          productIds.includes(product._id.toString()),
+        );
+
+        /**
+         * let listSku -> new  listSku after Products filtered with attributeSpecItem.productId
+         */
+        listSku = products.map((product) => {
+          return { sku: product.productVariant.sku };
+        });
+
+        const promotions = await this.promotionItemService.findByProductSku(
+          listSku,
+        );
+
+        return (this.data = {
           listDefault: {
             list: products,
           },
-        };
-
-        // find all attr for product
-        let listProductId = products.map((product) => {
-          return { productID: product._id.toString() };
+          attributeSpecItems: attributeSpecItems,
+          promotionItems: promotions,
         });
-        return this.attributeSpecItemService.findByListProductId(listProductId);
-      })
-      .then((attrSpecItems) => {
-        this.data = {
-          ...this.data,
-          attributeSpecItems: attrSpecItems,
-        };
-      });
+      }
+      //find product when hasn't query in attributeSpecItems collection
+      else {
+        const [attributeSpecItems, promotions] = await Promise.all([
+          this.attributeSpecItemService.findByListProductId(
+            listProductIdForFilter,
+          ),
+          this.promotionItemService.findByProductSku(listSku),
+        ]);
+
+        return (this.data = {
+          listDefault: {
+            list: products,
+          },
+          attributeSpecItems: attributeSpecItems,
+          promotionItems: promotions,
+        });
+      }
+    });
 
     return this.data;
   }

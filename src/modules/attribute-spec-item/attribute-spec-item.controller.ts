@@ -1,20 +1,25 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { AttributeSpecItemService } from './attribute-spec-item.service';
 import { CreateAttributeSpecItemDto } from './dto/create-attribute-spec-item.dto';
 import { UpdateAttributeSpecItemDto } from './dto/update-attribute-spec-item.dto';
 
 @Controller('attribute-spec-item')
 export class AttributeSpecItemController {
-  constructor(private readonly attributeSpecItemService: AttributeSpecItemService) {}
+  constructor(
+    private readonly attributeSpecItemService: AttributeSpecItemService,
+  ) {}
 
   @Post()
   create(@Body() createAttributeSpecItemDto: CreateAttributeSpecItemDto) {
     return this.attributeSpecItemService.create(createAttributeSpecItemDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.attributeSpecItemService.findAll();
   }
 
   @Get(':id')
@@ -23,8 +28,14 @@ export class AttributeSpecItemController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAttributeSpecItemDto: UpdateAttributeSpecItemDto) {
-    return this.attributeSpecItemService.update(+id, updateAttributeSpecItemDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateAttributeSpecItemDto: UpdateAttributeSpecItemDto,
+  ) {
+    return this.attributeSpecItemService.update(
+      +id,
+      updateAttributeSpecItemDto,
+    );
   }
 
   @Delete(':id')

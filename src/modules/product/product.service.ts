@@ -5,6 +5,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Product } from './entities/product.entity';
 import { Model, Types } from 'mongoose';
 import { PaginationType } from 'src/utils/types/pagination.type';
+import { QueryParseType } from 'src/utils/types/query-parse.type';
+import { ProductFilterType } from 'src/utils/types/product-filter.type';
 
 @Injectable()
 export class ProductService {
@@ -17,10 +19,19 @@ export class ProductService {
     return newProduct.save();
   }
 
-  async find(pagination: PaginationType): Promise<Product[]> {
-    const skip = pagination.limit * (pagination.page - 1);
-
-    return this.productModel.find().limit(pagination.limit).skip(skip).exec();
+  /**
+   *
+   * @param query
+   * @returns Promise<Product[]>
+   */
+  async find(query: QueryParseType): Promise<Product[]> {
+    const skip: number = query.pagination.limit * (query.pagination.page - 1);
+    // setup filter for query
+    return this.productModel
+      .find(query.productFilters)
+      .limit(query.pagination.limit)
+      .skip(skip)
+      .exec();
   }
 
   findOne(id: number) {
