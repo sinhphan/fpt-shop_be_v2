@@ -1,15 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { CreateSpecItemDto } from './dto/create-spec-item.dto';
 import { UpdateSpecItemDto } from './dto/update-spec-item.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { SpecItem } from './entities/spec-item.entity';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class SpecItemService {
-  create(createSpecItemDto: CreateSpecItemDto) {
-    return 'This action adds a new specItem';
+  constructor(
+    @InjectModel(SpecItem.name) private specItemModel: Model<SpecItem>,
+  ) {}
+
+  async create(createSpecItemDto: CreateSpecItemDto): Promise<SpecItem> {
+    const specItem = new this.specItemModel(createSpecItemDto);
+    return specItem.save();
   }
 
-  findAll() {
-    return `This action returns all specItem`;
+  async findAll(): Promise<SpecItem[]> {
+    return this.specItemModel.find().exec();
   }
 
   findOne(id: number) {

@@ -28,7 +28,10 @@ export class PromotionItemService {
       $or: listSku,
     };
 
-    return this.promotionModel.find(filter).exec();
+    return this.promotionModel
+      .find(filter)
+      .sort({ sku: 1, displayOrder: 1 })
+      .exec();
   }
 
   findOne(id: number) {

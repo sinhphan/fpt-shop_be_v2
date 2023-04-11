@@ -1,15 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { CreateAttributeItemDto } from './dto/create-attribute-item.dto';
 import { UpdateAttributeItemDto } from './dto/update-attribute-item.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { AttributeItem } from './entities/attribute-item.entity';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class AttributeItemService {
-  create(createAttributeItemDto: CreateAttributeItemDto) {
-    return 'This action adds a new attributeItem';
+  constructor(
+    @InjectModel(AttributeItem.name)
+    private attributeItemModel: Model<AttributeItem>,
+  ) {}
+
+  async create(
+    createAttributeItemDto: CreateAttributeItemDto,
+  ): Promise<AttributeItem> {
+    const attributeItem = new this.attributeItemModel(createAttributeItemDto);
+    return attributeItem.save();
   }
 
-  findAll() {
-    return `This action returns all attributeItem`;
+  async findAll(): Promise<AttributeItem[]> {
+    return this.attributeItemModel.find().sort({ specName: 1 }).exec();
   }
 
   findOne(id: number) {

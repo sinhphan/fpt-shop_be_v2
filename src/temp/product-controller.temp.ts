@@ -1,100 +1,78 @@
 // @Post()
-//   create(/*@Body() createProductDto: CreateProductDto*/) {
-//     data1.filterModel.listDefault.list.forEach(async (e) => {
-//       const product = await this.productService.create(e);
+// async create(/*@Body() createProductDto: CreateProductDto*/) {
+//   data1.filterModel.listDefault.list.forEach(async (e) => {
+//     const product = await this.productService.create(e);
 
-//       // get attr of product
-//       const attributeSpecItemData = data1.filterModel.attributeSpecItems.filter(
-//         (attr) => e.id === attr.productID,
-//       );
+//     // get attr of product
+//     const attributeSpecItemData = data1.filterModel.attributeSpecItems.filter(
+//       (attr) => e.id === attr.productID,
+//     );
 
-//       attributeSpecItemData.forEach(async (attr) => {
-//         const newAttr = { ...attr, productID: product };
-//         await this.attributeSpecItemService.create(newAttr);
-//       });
-
-//       //get promotion of products
-//       const promotions = data1.filterModel.promotionItems.filter(
-//         (promotion) => promotion.sku === e.productVariant.sku,
-//       );
-
-//       promotions.forEach(async (promotion) => {
-//         const newPromo = { ...promotion, productID: product };
-//         await this.promotionItemService.create(newPromo);
-//       });
+//     attributeSpecItemData.forEach(async (attr) => {
+//       const newAttr = { ...attr, productID: product };
+//       await this.attributeSpecItemService.create(newAttr);
 //     });
 
-//     data2.filterModel.listDefault.list.forEach(async (e) => {
-//       const product = await this.productService.create(e);
+//     //get promotion of products
+//     const promotions = data1.filterModel.promotionItems.filter(
+//       (promotion) => promotion.sku === e.productVariant.sku,
+//     );
 
-//       // get attr of product
-//       const attributeSpecItemData = data2.filterModel.attributeSpecItems.filter(
-//         (attr) => e.id === attr.productID,
-//       );
-
-//       attributeSpecItemData.forEach(async (attr) => {
-//         const newAttr = { ...attr, productID: product };
-//         await this.attributeSpecItemService.create(newAttr);
-//       });
-
-//       //get promotion of products
-//       const promotions = data2.filterModel.promotionItems.filter(
-//         (promotion) => promotion.sku === e.productVariant.sku,
-//       );
-
-//       promotions.forEach(async (promotion) => {
-//         const newPromo = { ...promotion, productID: product };
-//         await this.promotionItemService.create(newPromo);
-//       });
+//     promotions.forEach(async (promotion) => {
+//       const newPromo = { ...promotion, productID: product };
+//       await this.promotionItemService.create(newPromo);
 //     });
+//   });
 
-//     data3.filterModel.listDefault.list.forEach(async (e) => {
-//       const product = await this.productService.create(e);
+//   data1.filterModel.navFilterAttributeItem.attributeItems.forEach(
+//     async (attr) => {
+//       const attributeItem = await this.attributeItemService.create(attr);
 
-//       // get attr of product
-//       const attributeSpecItemData = data3.filterModel.attributeSpecItems.filter(
-//         (attr) => e.id === attr.productID,
-//       );
+//       // get spec items of attribute
+//       const specItemsData =
+//         data1.filterModel.navFilterAttributeItem.specItems.filter(
+//           (specItem) => {
+//             return specItem.attributeID === attr.id;
+//           },
+//         );
 
-//       attributeSpecItemData.forEach(async (attr) => {
-//         const newAttr = { ...attr, productID: product };
-//         await this.attributeSpecItemService.create(newAttr);
+//       // insert spec item to database
+//       specItemsData.forEach(async (specItem) => {
+//         const newSpecItem = {
+//           ...specItem,
+//           attributeID: attributeItem,
+//         };
+//         this.specItemService.create(newSpecItem);
 //       });
+//     },
+//   );
 
-//       //get promotion of products
-//       const promotions = data3.filterModel.promotionItems.filter(
-//         (promotion) => promotion.sku === e.productVariant.sku,
-//       );
+//   // insert category
+//   const parentCategoryInit = {
+//     name: 'Hãng sản xuất',
+//     nameAscii: 'hang-san-xuat',
+//     parentID: new Types.ObjectId(),
+//     order: 1,
+//     isShowInTab: true,
+//     isShowInNavFilter: true,
+//     imageCateUrl: '',
+//     shareImageUrl: '',
+//   };
 
-//       promotions.forEach(async (promotion) => {
-//         const newPromo = { ...promotion, productID: product };
-//         await this.promotionItemService.create(newPromo);
-//       });
-//     });
+//   const parentCategory = await this.categoryService.create(
+//     parentCategoryInit,
+//   );
 
-//     data4.filterModel.listDefault.list.forEach(async (e) => {
-//       const product = await this.productService.create(e);
+//   const categories = data1.filterModel.navFilter.listCategory.filter(
+//     (e) => e.parentID === 299,
+//   );
 
-//       // get attr of product
-//       const attributeSpecItemData = data4.filterModel.attributeSpecItems.filter(
-//         (attr) => e.id === attr.productID,
-//       );
-
-//       attributeSpecItemData.forEach(async (attr) => {
-//         const newAttr = { ...attr, productID: product };
-//         await this.attributeSpecItemService.create(newAttr);
-//       });
-
-//       //get promotion of products
-//       const promotions = data4.filterModel.promotionItems.filter(
-//         (promotion) => promotion.sku === e.productVariant.sku,
-//       );
-
-//       promotions.forEach(async (promotion) => {
-//         const newPromo = { ...promotion, productID: product };
-//         await this.promotionItemService.create(newPromo);
-//       });
-//     });
-
-//     return;
-//   }
+//   categories.forEach(async (e) => {
+//     const newCategory = {
+//       ...e,
+//       parentID: parentCategory._id,
+//     };
+//     await this.categoryService.create(newCategory);
+//   });
+//   return 'insert data success';
+// }
