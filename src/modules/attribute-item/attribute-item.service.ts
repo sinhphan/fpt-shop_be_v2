@@ -20,7 +20,7 @@ export class AttributeItemService {
   }
 
   async findAll(): Promise<AttributeItem[]> {
-    return this.attributeItemModel.find().sort({ specName: 1 }).exec();
+    return this.attributeItemModel.find().sort({ levelOrder: 1 }).exec();
   }
 
   findOne(id: number) {

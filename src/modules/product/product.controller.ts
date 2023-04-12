@@ -14,14 +14,16 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { AttributeSpecItemService } from '../attribute-spec-item/attribute-spec-item.service';
 import { Types } from 'mongoose';
 import { PromotionItemService } from '../promotion-item/promotion-item.service';
-import { Request, query } from 'express';
-import { queryParse } from 'src/utils/functions';
+import { Request } from 'express';
 
 import { dataType } from 'src/utils/types/data.type';
-import { data1 } from 'src/data/data1';
 import { CategoryService } from '../category/category.service';
 import { SpecItemService } from '../spec-item/spec-item.service';
 import { AttributeItemService } from '../attribute-item/attribute-item.service';
+import { PromotionItem } from '../promotion-item/entities/promotion-item.entity';
+import { queryParser } from 'src/utils/functions';
+import { AttributeSpecItemFilterType } from 'src/utils/types/attribute-spec-item-filter.type';
+import { AttributeSpecItem } from '../attribute-spec-item/entities/attribute-spec-item.entity';
 
 /**
  * @example url
@@ -46,16 +48,10 @@ export class ProductController {
     private readonly specItemService: SpecItemService,
   ) {}
 
-  @Post()
-  async create() {
-    await this.productService.create(data1.filterModel.listDefault.list[0]);
-    return 'insert data';
-  }
-
   @Get()
   /* --------------- @Header('Content-Type', 'application/json') -------------- */
   async find(@Req() req: Request) {
-    const queryParsed = queryParse(req);
+    const queryParsed = queryParser(req);
 
     // get data for menu and navigation
     const [categories, attributeItems, specItems] = await Promise.all([
@@ -83,7 +79,8 @@ export class ProductController {
       // find attributes and promotions
       //find product when has query in attributeSpecItems collection
       if (queryParsed.hasAttributeSpecItemsFilters) {
-        const attributeSpecItems =
+        let promotions: PromotionItem[];
+        let attributeSpecItems =
           await this.attributeSpecItemService.findByQuery(
             queryParsed.attributeSpecItemsFilters,
           );
@@ -97,11 +94,15 @@ export class ProductController {
         });
 
         /**
-         * let Products ---> new products after filtered with attributeSpecItem.productId
+         * Products ---> new products after filtered with attributeSpecItem.productId
          */
         products = products.filter((product) =>
           productIds.includes(product._id.toString()),
         );
+
+        listProductIdForFilter = products.map((e) => {
+          return { productID: e._id.toString() };
+        });
 
         /**
          * let listSku -> new  listSku after Products filtered with attributeSpecItem.productId
@@ -110,9 +111,12 @@ export class ProductController {
           return { sku: product.productVariant.sku };
         });
 
-        const promotions = await this.promotionItemService.findByProductSku(
-          listSku,
-        );
+        [attributeSpecItems, promotions] = await Promise.all([
+          this.attributeSpecItemService.findByListProductId(
+            listProductIdForFilter,
+          ),
+          this.promotionItemService.findByProductSku(listSku),
+        ]);
 
         return (this.data = {
           listDefault: {

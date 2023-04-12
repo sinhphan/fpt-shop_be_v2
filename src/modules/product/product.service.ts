@@ -26,9 +26,10 @@ export class ProductService {
    */
   async find(query: QueryParseType): Promise<Product[]> {
     const skip: number = query.pagination.limit * (query.pagination.page - 1);
+    const filter = query.productFilters ? query.productFilters : null;
     // setup filter for query
     return this.productModel
-      .find(query.productFilters)
+      .find(filter)
       .sort(query.productSort)
       .limit(query.pagination.limit)
       .skip(skip)

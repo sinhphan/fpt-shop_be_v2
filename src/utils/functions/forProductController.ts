@@ -2,13 +2,18 @@ import { Request } from 'express';
 import { APP_CONFIG } from 'src/config/app.config';
 import { PriceFilterType } from '../types/product-filter.type';
 import { QueryParseType } from '../types/query-parse.type';
+import { isEmptyObject } from './isEmptyObject';
 
-export const queryParse = (req: Request): QueryParseType => {
+export const queryParser = (req: Request): QueryParseType => {
   let queryParsed: QueryParseType;
   const pageTemp = req.query.page;
   const brand = req.query.brand;
   const price = req.query.price;
-  const attributes = req.query.attr;
+  const cpu = req.query.cpu;
+  const gpu = req.query.gpu;
+  const screen = req.query.screen;
+  const ssd = req.query.ssd;
+  const ram = req.query.ram;
   const zeroPayment = req.query.zero;
   const productSortBy = req.query.sort;
 
@@ -21,10 +26,10 @@ export const queryParse = (req: Request): QueryParseType => {
       page: page,
     },
     productFilters: {
-      $and: [{}, {}, {}],
+      $and: [{}],
     },
     attributeSpecItemsFilters: {
-      $and: [{ $and: [{}] }, { $and: [{}] }],
+      $and: [],
     },
     hasAttributeSpecItemsFilters: false,
     productSort: { 'productVariant.stockQuantity': -1 },
@@ -36,19 +41,11 @@ export const queryParse = (req: Request): QueryParseType => {
       $regex: new RegExp(brand.toString()),
       $options: 'i',
     };
-
-    queryParsed = {
-      ...queryParsed,
-      productFilters: {
-        $and: [
-          {
-            brandName: brandNameFilter,
-          },
-          {},
-          {},
-        ],
-      },
-    };
+    if (isEmptyObject(queryParsed.productFilters.$and[0])) {
+      queryParsed.productFilters.$and[0] = { brandName: brandNameFilter };
+    } else {
+      queryParsed.productFilters.$and.push({ brandName: brandNameFilter });
+    }
   }
 
   // for product find product has installment payment 0%
@@ -58,18 +55,11 @@ export const queryParse = (req: Request): QueryParseType => {
       $options: 'i',
     };
 
-    queryParsed = {
-      ...queryParsed,
-      productFilters: {
-        $and: [
-          queryParsed.productFilters.$and[0],
-          {
-            labelInst: zeroPaymentRegEx,
-          },
-          {},
-        ],
-      },
-    };
+    if (isEmptyObject(queryParsed.productFilters.$and[0])) {
+      queryParsed.productFilters.$and[0] = { labelInst: zeroPaymentRegEx };
+    } else {
+      queryParsed.productFilters.$and.push({ labelInst: zeroPaymentRegEx });
+    }
   }
 
   // for generate price filter
@@ -90,42 +80,123 @@ export const queryParse = (req: Request): QueryParseType => {
       }
     });
 
-    queryParsed = {
-      ...queryParsed,
-      productFilters: {
-        $and: [
-          queryParsed.productFilters.$and[0],
-          queryParsed.productFilters.$and[1],
-          { $or: priceConditions },
-        ],
-      },
-    };
+    if (isEmptyObject(queryParsed.productFilters.$and[0])) {
+      queryParsed.productFilters.$and[0] = { $or: priceConditions };
+    } else {
+      queryParsed.productFilters.$and.push({ $or: priceConditions });
+    }
   }
 
   // for attribute spec item filter by screen
-  if (attributes) {
-    let attributesFilter = {
-      $regex: new RegExp(attributes.toString()),
+  if (screen) {
+    let screenFilter = {
+      $regex: new RegExp(screen.toString()),
       $options: 'i',
     };
 
-    queryParsed = {
-      ...queryParsed,
-      attributeSpecItemsFilters: {
-        $and: [{ $and: [{ specName: attributesFilter }] }, {}],
-      },
-      hasAttributeSpecItemsFilters: true,
+    if (isEmptyObject(queryParsed.attributeSpecItemsFilters.$and[0])) {
+      queryParsed.attributeSpecItemsFilters.$and[0] = {
+        specName: screenFilter,
+      };
+    } else {
+      queryParsed.attributeSpecItemsFilters.$and.push({
+        specName: screenFilter,
+      });
+    }
+
+    queryParsed.hasAttributeSpecItemsFilters = true;
+  }
+
+  // for attribute spec item filter by cpu
+  if (cpu) {
+    let cpuFilter = {
+      $regex: new RegExp(cpu.toString()),
+      $options: 'i',
     };
+
+    if (isEmptyObject(queryParsed.attributeSpecItemsFilters.$and[0])) {
+      queryParsed.attributeSpecItemsFilters.$and[0] = {
+        specName: cpuFilter,
+      };
+    } else {
+      queryParsed.attributeSpecItemsFilters.$and.push({
+        specName: cpuFilter,
+      });
+    }
+
+    queryParsed.hasAttributeSpecItemsFilters = true;
+  }
+
+  // for attribute spec item filter by gpu
+  if (gpu) {
+    let gpuFilter = {
+      $regex: new RegExp(gpu.toString()),
+      $options: 'i',
+    };
+
+    if (isEmptyObject(queryParsed.attributeSpecItemsFilters.$and[0])) {
+      queryParsed.attributeSpecItemsFilters.$and[0] = {
+        specName: gpuFilter,
+      };
+    } else {
+      queryParsed.attributeSpecItemsFilters.$and.push({
+        specName: gpuFilter,
+      });
+    }
+
+    queryParsed.hasAttributeSpecItemsFilters = true;
+  }
+
+  // for attribute spec item filter by ssd
+  if (ssd) {
+    let ssdFilter = {
+      $regex: new RegExp(ssd.toString()),
+      $options: 'i',
+    };
+
+    if (isEmptyObject(queryParsed.attributeSpecItemsFilters.$and[0])) {
+      queryParsed.attributeSpecItemsFilters.$and[0] = {
+        specName: ssdFilter,
+      };
+    } else {
+      queryParsed.attributeSpecItemsFilters.$and.push({
+        specName: ssdFilter,
+      });
+    }
+
+    queryParsed.hasAttributeSpecItemsFilters = true;
+  }
+
+  // for attribute spec item filter by ssd
+  if (ram) {
+    let ramFilter = {
+      $regex: new RegExp(ram.toString()),
+      $options: 'i',
+    };
+
+    if (isEmptyObject(queryParsed.attributeSpecItemsFilters.$and[0])) {
+      queryParsed.attributeSpecItemsFilters.$and[0] = {
+        specName: ramFilter,
+      };
+    } else {
+      queryParsed.attributeSpecItemsFilters.$and.push({
+        specName: ramFilter,
+      });
+    }
+
+    queryParsed.hasAttributeSpecItemsFilters = true;
   }
 
   // for parse sort query string
   if (productSortBy) {
     const parsedSortQuery = parseSortQuery(productSortBy.toString());
-    queryParsed = {
-      ...queryParsed,
-      productSort: parsedSortQuery,
-    };
+    queryParsed.productSort = parsedSortQuery;
   }
+  if (isEmptyObject(queryParsed.productFilters.$and[0]))
+    delete queryParsed.productFilters;
+
+  if (isEmptyObject(queryParsed.attributeSpecItemsFilters.$and[0]))
+    delete queryParsed.attributeSpecItemsFilters;
 
   return queryParsed;
 };

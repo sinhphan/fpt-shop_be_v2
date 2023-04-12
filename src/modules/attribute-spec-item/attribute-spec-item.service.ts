@@ -4,7 +4,6 @@ import { UpdateAttributeSpecItemDto } from './dto/update-attribute-spec-item.dto
 import { InjectModel } from '@nestjs/mongoose';
 import { AttributeSpecItem } from './entities/attribute-spec-item.entity';
 import { Model, Types } from 'mongoose';
-import { filter } from 'rxjs';
 import { AttributeSpecItemFilterType } from 'src/utils/types/attribute-spec-item-filter.type';
 
 @Injectable()
@@ -24,15 +23,20 @@ export class AttributeSpecItemService {
   async findByQuery(
     filter: AttributeSpecItemFilterType,
   ): Promise<AttributeSpecItem[]> {
+    filter = filter ? filter : null;
+
     return this.attributeSpecItemModel.find(filter).exec();
   }
 
   async findByListProductId(
     listProductId: { productID: string }[],
   ): Promise<AttributeSpecItem[]> {
-    let filter = {
-      $or: listProductId,
-    };
+    let filter =
+      listProductId.length > 0
+        ? {
+            $or: listProductId,
+          }
+        : null;
 
     return this.attributeSpecItemModel.find(filter).exec();
   }

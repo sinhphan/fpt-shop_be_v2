@@ -24,9 +24,12 @@ export class PromotionItemService {
   }
 
   async findByProductSku(listSku: { sku: string }[]): Promise<PromotionItem[]> {
-    const filter = {
-      $or: listSku,
-    };
+    const filter =
+      listSku.length > 0
+        ? {
+            $or: listSku,
+          }
+        : null;
 
     return this.promotionModel
       .find(filter)

@@ -1,22 +1,27 @@
 import { StringFilterType } from './string-filter.type';
 
 export interface ProductFilterType {
-  $and?:
-    | [
-        {
-          brandName?: StringFilterType | {};
-        },
-        (
-          | {
-              labelInst?: string;
-            }
-          | {}
-        ),
-        {
-          $or?: PriceFilterType[] | {}[];
-        },
-      ]
-    | [{}];
+  $and?: (
+    | { brandName?: StringFilterType }
+    | { labelInst?: StringFilterType }
+    | { $or?: PriceFilterType[] }
+  )[];
+
+  // | [
+  //     {
+  //       brandName?: StringFilterType | {};
+  //     },
+  //     (
+  //       | {
+  //           labelInst?: string;
+  //         }
+  //       | {}
+  //     ),
+  //     {
+  //       $or?: PriceFilterType[] | {}[];
+  //     },
+  //   ]
+  // | [{}];
 }
 
 export interface PriceFilterType {
