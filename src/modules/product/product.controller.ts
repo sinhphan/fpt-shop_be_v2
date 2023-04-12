@@ -1,13 +1,11 @@
 import {
   Controller,
   Get,
-  Post,
   Body,
   Patch,
   Param,
   Delete,
   Req,
-  Header,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -22,8 +20,6 @@ import { SpecItemService } from '../spec-item/spec-item.service';
 import { AttributeItemService } from '../attribute-item/attribute-item.service';
 import { PromotionItem } from '../promotion-item/entities/promotion-item.entity';
 import { queryParser } from 'src/utils/functions';
-import { AttributeSpecItemFilterType } from 'src/utils/types/attribute-spec-item-filter.type';
-import { AttributeSpecItem } from '../attribute-spec-item/entities/attribute-spec-item.entity';
 
 /**
  * @example url
