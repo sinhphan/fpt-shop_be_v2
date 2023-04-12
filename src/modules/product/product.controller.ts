@@ -33,8 +33,6 @@ import { queryParser } from 'src/utils/functions';
  */
 @Controller('product')
 export class ProductController {
-  private data: dataType;
-
   constructor(
     private readonly productService: ProductService,
     private readonly attributeSpecItemService: AttributeSpecItemService,
@@ -47,6 +45,7 @@ export class ProductController {
   @Get()
   /* --------------- @Header('Content-Type', 'application/json') -------------- */
   async find(@Req() req: Request) {
+    let data: dataType;
     const queryParsed = queryParser(req);
 
     // get data for menu and navigation
@@ -74,7 +73,7 @@ export class ProductController {
 
       // find attributes and promotions
       //find product when has query in attributeSpecItems collection
-      if (queryParsed.hasAttributeSpecItemsFilters) {
+      if (queryParsed.hasAttributeSpecItemsQueries) {
         let promotions: PromotionItem[];
         let attributeSpecItems =
           await this.attributeSpecItemService.findByQuery(
@@ -114,7 +113,7 @@ export class ProductController {
           this.promotionItemService.findByProductSku(listSku),
         ]);
 
-        return (this.data = {
+        return (data = {
           listDefault: {
             list: products,
           },
@@ -138,7 +137,7 @@ export class ProductController {
           this.promotionItemService.findByProductSku(listSku),
         ]);
 
-        return (this.data = {
+        return (data = {
           listDefault: {
             list: products,
           },
@@ -155,7 +154,7 @@ export class ProductController {
       }
     });
 
-    return this.data;
+    return data;
   }
 
   @Get(':id')
