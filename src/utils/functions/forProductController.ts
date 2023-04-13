@@ -29,7 +29,7 @@ export const queryParser = (req: Request): QueryParseType => {
       $and: [{}],
     },
     attributeSpecItemsFilters: {
-      $and: [],
+      $or: [],
     },
     hasAttributeSpecItemsFilters: false,
     productSort: { 'productVariant.stockQuantity': -1 },
@@ -94,12 +94,12 @@ export const queryParser = (req: Request): QueryParseType => {
       $options: 'i',
     };
 
-    if (isEmptyObject(queryParsed.attributeSpecItemsFilters.$and[0])) {
-      queryParsed.attributeSpecItemsFilters.$and[0] = {
+    if (isEmptyObject(queryParsed.attributeSpecItemsFilters.$or[0])) {
+      queryParsed.attributeSpecItemsFilters.$or[0] = {
         specName: screenFilter,
       };
     } else {
-      queryParsed.attributeSpecItemsFilters.$and.push({
+      queryParsed.attributeSpecItemsFilters.$or.push({
         specName: screenFilter,
       });
     }
@@ -114,12 +114,12 @@ export const queryParser = (req: Request): QueryParseType => {
       $options: 'i',
     };
 
-    if (isEmptyObject(queryParsed.attributeSpecItemsFilters.$and[0])) {
-      queryParsed.attributeSpecItemsFilters.$and[0] = {
+    if (isEmptyObject(queryParsed.attributeSpecItemsFilters.$or[0])) {
+      queryParsed.attributeSpecItemsFilters.$or[0] = {
         specName: cpuFilter,
       };
     } else {
-      queryParsed.attributeSpecItemsFilters.$and.push({
+      queryParsed.attributeSpecItemsFilters.$or.push({
         specName: cpuFilter,
       });
     }
@@ -134,12 +134,12 @@ export const queryParser = (req: Request): QueryParseType => {
       $options: 'i',
     };
 
-    if (isEmptyObject(queryParsed.attributeSpecItemsFilters.$and[0])) {
-      queryParsed.attributeSpecItemsFilters.$and[0] = {
+    if (isEmptyObject(queryParsed.attributeSpecItemsFilters.$or[0])) {
+      queryParsed.attributeSpecItemsFilters.$or[0] = {
         specName: gpuFilter,
       };
     } else {
-      queryParsed.attributeSpecItemsFilters.$and.push({
+      queryParsed.attributeSpecItemsFilters.$or.push({
         specName: gpuFilter,
       });
     }
@@ -154,12 +154,12 @@ export const queryParser = (req: Request): QueryParseType => {
       $options: 'i',
     };
 
-    if (isEmptyObject(queryParsed.attributeSpecItemsFilters.$and[0])) {
-      queryParsed.attributeSpecItemsFilters.$and[0] = {
+    if (isEmptyObject(queryParsed.attributeSpecItemsFilters.$or[0])) {
+      queryParsed.attributeSpecItemsFilters.$or[0] = {
         specName: ssdFilter,
       };
     } else {
-      queryParsed.attributeSpecItemsFilters.$and.push({
+      queryParsed.attributeSpecItemsFilters.$or.push({
         specName: ssdFilter,
       });
     }
@@ -174,12 +174,12 @@ export const queryParser = (req: Request): QueryParseType => {
       $options: 'i',
     };
 
-    if (isEmptyObject(queryParsed.attributeSpecItemsFilters.$and[0])) {
-      queryParsed.attributeSpecItemsFilters.$and[0] = {
+    if (isEmptyObject(queryParsed.attributeSpecItemsFilters.$or[0])) {
+      queryParsed.attributeSpecItemsFilters.$or[0] = {
         specName: ramFilter,
       };
     } else {
-      queryParsed.attributeSpecItemsFilters.$and.push({
+      queryParsed.attributeSpecItemsFilters.$or.push({
         specName: ramFilter,
       });
     }
@@ -195,7 +195,7 @@ export const queryParser = (req: Request): QueryParseType => {
   if (isEmptyObject(queryParsed.productFilters.$and[0]))
     delete queryParsed.productFilters;
 
-  if (isEmptyObject(queryParsed.attributeSpecItemsFilters.$and[0]))
+  if (isEmptyObject(queryParsed.attributeSpecItemsFilters.$or[0]))
     delete queryParsed.attributeSpecItemsFilters;
 
   return queryParsed;
