@@ -31,7 +31,7 @@ export const queryParser = (req: Request): QueryParseType => {
     attributeSpecItemsFilters: {
       $or: [],
     },
-    hasAttributeSpecItemsFilters: false,
+    hasAttributeSpecItemsQueries: false,
     productSort: { 'productVariant.stockQuantity': -1 },
   };
 
@@ -104,7 +104,7 @@ export const queryParser = (req: Request): QueryParseType => {
       });
     }
 
-    queryParsed.hasAttributeSpecItemsFilters = true;
+    queryParsed.hasAttributeSpecItemsQueries = true;
   }
 
   // for attribute spec item filter by cpu
@@ -124,7 +124,7 @@ export const queryParser = (req: Request): QueryParseType => {
       });
     }
 
-    queryParsed.hasAttributeSpecItemsFilters = true;
+    queryParsed.hasAttributeSpecItemsQueries = true;
   }
 
   // for attribute spec item filter by gpu
@@ -144,7 +144,7 @@ export const queryParser = (req: Request): QueryParseType => {
       });
     }
 
-    queryParsed.hasAttributeSpecItemsFilters = true;
+    queryParsed.hasAttributeSpecItemsQueries = true;
   }
 
   // for attribute spec item filter by ssd
@@ -164,7 +164,7 @@ export const queryParser = (req: Request): QueryParseType => {
       });
     }
 
-    queryParsed.hasAttributeSpecItemsFilters = true;
+    queryParsed.hasAttributeSpecItemsQueries = true;
   }
 
   // for attribute spec item filter by ssd
@@ -184,7 +184,7 @@ export const queryParser = (req: Request): QueryParseType => {
       });
     }
 
-    queryParsed.hasAttributeSpecItemsFilters = true;
+    queryParsed.hasAttributeSpecItemsQueries = true;
   }
 
   // for parse sort query string

@@ -6,6 +6,6 @@ export interface QueryParseType {
   pagination?: PaginationType;
   productFilters?: ProductFilterType;
   attributeSpecItemsFilters?: AttributeSpecItemFilterType;
-  hasAttributeSpecItemsFilters?: boolean;
+  hasAttributeSpecItemsQueries?: boolean;
   productSort?: {};
 }
