@@ -27,7 +27,10 @@ import { queryParser } from 'src/utils/functions';
  * brand=Apple|asus|hp&
  * price=0-10e6|20e6-25e6&
  * page=2&
- * attr=i5|i7|r5|r7|radeon|navida&
+ * cpu=i5|i7|r5|r7&
+ * gpu=amd|nvidia&
+ * ram= 4 Gb|8 Gb
+ * screen=13inch|14 inch
  * zero=Trả góp 0%&
  * sort=low_price  one in [low_price,hight_price,best_sell]
  */
